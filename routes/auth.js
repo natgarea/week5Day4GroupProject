@@ -17,7 +17,7 @@ router.get("/login", (req, res, next) => {
 router.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: "/",
+    successRedirect: "/profile",
     failureRedirect: "/auth/login",
     failureFlash: true,
     passReqToCallback: true
@@ -32,8 +32,9 @@ router.post("/signup", upload.single('photo'), (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
-  const { originalname, url } = req.file;
-  console.log(req.file)
+  // const { originalname, url } = req.file;
+  const urlProfile = req.file.secure_url;
+ 
   if (username === "" || password === "" || email === "") {
     res.render("auth/signup", {
       message: "Indicate email, username and password"
@@ -62,8 +63,8 @@ router.post("/signup", upload.single('photo'), (req, res, next) => {
       username,
       password: hashPass,
       status: "Pending confirmation",
-      confirmationCode: token
-      // profilePicture:
+      confirmationCode: token,
+       profilePicture: urlProfile
     });
 
     newUser
@@ -78,6 +79,7 @@ router.post("/signup", upload.single('photo'), (req, res, next) => {
             html: `<a href="http://localhost:3000/auth/confirm/${token}">Haz click para confirmar tu cuenta</a>`
           })
           .then(() => res.redirect("/auth/login"))
+          .catch(error =>  console.log(error))
          
       })
       .catch(err => {
