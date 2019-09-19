@@ -1,15 +1,45 @@
 const express = require("express");
 
 const router = express.Router();
-const User = require("../models/User");
-const Picture = require("../models/Picture");
+const Post = require("../models/Post");
 const upload = require("../configs/cloudinary.config");
 
 const secureMiddlewares = require('../middlewares/secure.mid');
-
-router.get("/", secureMiddlewares.checkUser , (req,res, next)=>{
+router.all("/*", secureMiddlewares.checkUser)
+router.get("/" , (req,res, next)=>{
   const user = req.user;
   res.render("profile/index", {user});
 })
+
+router.get("/addPost", (req, res) => {
+  res.render("profile/addPost")
+}) 
+
+router.post("/addPost", upload.single('photo'), (req, res) => {
+
+  const {content, picName} = req.body;
+  const {secure_url} = req.file;
+  const creatorId = req.user.id;
+
+  const newPost = new Post({
+    content,
+    creatorId,
+    picPath: secure_url,
+    picName
+  });
+
+  newPost
+    .save()
+    .then(() => {
+      res.redirect("/");
+    })
+    .catch(err => {
+      console.log(err);
+      res.render("auth/login", { message: "Something went wrong" });
+    });
+
+
+  
+}) 
 
 module.exports = router;
