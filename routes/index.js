@@ -7,7 +7,7 @@ const Post = require('../models/Post')
 /* GET home page */
 router.get('/', (req, res, next) => {
   const posts = [];
-  Post.find().sort('createdAt', -1).then(selectedPost => {
+  Post.find().sort('createdAt').then(selectedPost => {
     res.render('index', { selectedPost })
   })
   
