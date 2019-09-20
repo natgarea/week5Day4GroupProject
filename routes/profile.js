@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const Post = require("../models/Post");
 const upload = require("../configs/cloudinary.config");
+const Comment = require('../models/Comment')
 
 const secureMiddlewares = require('../middlewares/secure.mid');
 router.all("/*", secureMiddlewares.checkUser)
@@ -19,11 +20,10 @@ router.post("/addPost", upload.single('photo'), (req, res) => {
 
   const {content, picName} = req.body;
   const {secure_url} = req.file;
-  const creatorId = req.user.id;
 
   const newPost = new Post({
     content,
-    creatorId,
+    creatorId: req.user._id,
     picPath: secure_url,
     picName
   });
@@ -37,9 +37,34 @@ router.post("/addPost", upload.single('photo'), (req, res) => {
       console.log(err);
       res.render("auth/login", { message: "Something went wrong" });
     });
+}) 
 
 
+router.post("/addComment", upload.single('photo'), (req, res) => {
   
+  const secure_url = (req.file && req.file.secure_url)?req.file.secure_url: false;
+  const {content, picName, postId} = req.body;
+
+  const newComment = new Comment({
+    content,
+    authorId: req.user._id,
+    picPath: secure_url,
+    picName
+  });
+
+  newComment
+    .save()
+    .then((comment) => {
+
+      Post.findByIdAndUpdate(postId, { $push: {comments: comment._id}})
+        .then(() => res.redirect("/"))
+        .catch((error) => next(error))
+
+    })
+    .catch(err => {
+      console.log(err);
+      res.render("auth/login", { message: "Something went wrong" });
+    });
 }) 
 
 module.exports = router;

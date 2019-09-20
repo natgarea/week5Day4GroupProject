@@ -1,5 +1,41 @@
 <h1>Homepage</h1>
-{{selectedPost}}
-{{#each posts}}
-  <p>Title: {{posts.picName}}</p>
+{{#each selectedPost}}
+<figure><img src="{{this.picPath}}" alt="{{this.picName}}">
+  <figcaption>{{this.picName}}</figcaption>
+</figure>
+<p>Autor: {{this.creatorId.username}}</p>
+<p>{{this.content}}</p>
+
+
+  
+
+  
+  {{#if ../user}}
+  <h2>Comments:</h2>
+  <ul>
+  
+  {{#each this.comments}}
+
+    <li>
+      <h3>comment</h3>
+      <figure><img src="{{this.picPath}}" alt="{{this.picName}}">
+  <figcaption>{{this.picName}}</figcaption>
+</figure>
+<p>Autor: {{this.authorId}}</p>
+<p>{{this.content}}</p>
+    </li>
+
+  {{/each}}
+  </ul>
+  <form action="/profile/addComment" method="post" enctype="multipart/form-data">
+    <label for="content">Enter comment:</label>
+    <textarea name="content" cols="30" rows="5"></textarea>
+    <label for="picName">Image title:</label>
+    <input type="text" name="picName" placeholder="photo name">
+    <label for="photo">Image file:</label>
+    <input type="file" name="photo" placeholder="your photo">
+    <input type="hidden" name="postId" value="{{this.id}}">
+    <input type="submit" value="Submit comment">
+  </form>
+  {{/if}}
 {{/each}}

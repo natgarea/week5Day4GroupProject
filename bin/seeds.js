@@ -9,6 +9,8 @@ const User = require("../models/User");
 
 const bcryptSalt = 10;
 
+// require('./configs/db.config');
+
 mongoose
   .connect('mongodb://localhost/proyecto-grupo', {useNewUrlParser: true})
   .then(x => {

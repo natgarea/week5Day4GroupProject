@@ -2,7 +2,6 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const User = require("../models/User");
-const Picture = require("../models/Picture");
 const upload = require("../configs/cloudinary.config");
 
 let transporter = require("../configs/nodemailer.config");

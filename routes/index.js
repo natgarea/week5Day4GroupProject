@@ -3,13 +3,18 @@ const router  = express.Router();
 const authRoutes = require('./auth');
 const profileRoutes = require('./profile');
 const Post = require('../models/Post')
+const Comment = require('../models/Comment')
 
 /* GET home page */
 router.get('/', (req, res, next) => {
-  const posts = [];
-  Post.find().sort('createdAt').then(selectedPost => {
-    res.render('index', { selectedPost })
+  if (!req.user) {
+    req.user= false;
+  }
+  const user = req.user
+  Post.find().sort('createdAt').populate('creatorId').populate('comments').then(selectedPost => { console.log(selectedPost)
+    res.render('index', { selectedPost, user })
   })
+  
   
 });
 
